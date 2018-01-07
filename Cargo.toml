@@ -1,0 +1,6 @@
+[package]
+name = "scrotum"
+version = "0.1.0"
+authors = ["Sean Dunbar <sean@sdunbar.me>", "Terry Bolt <bolt.terry@gmail.com"]
+
+[dependencies]
