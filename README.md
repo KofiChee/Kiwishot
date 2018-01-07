@@ -1,0 +1,2 @@
+# scrotum
+Scrot Upload Manager
