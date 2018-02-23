@@ -1,11 +1,16 @@
 import sys
+import os
 from uploader import imgur
+from screenshot import screenshot
 
-def screenshot():
-    filepath = sys.argv[1]
+def upload(filepath):
+    print('Uploading screenshot...')
     link = imgur.upload(filepath)
     print(link)
 
 
 if __name__ == '__main__':
-    screenshot()
+    temp_file = "/tmp/temp.png"
+    screenshot.screenshot_active()
+    upload(temp_file)
+    os.system('rm {}'.format(temp_file))
