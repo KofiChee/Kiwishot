@@ -11,6 +11,7 @@ def upload(filepath):
 
 if __name__ == '__main__':
     temp_file = "/tmp/temp.png"
+    print("Taking Screenshot")
     screenshot.screenshot_region(temp_file)
     upload(temp_file)
     os.system('xclip -selection clipboard -t image/png -i {}'. format(temp_file))

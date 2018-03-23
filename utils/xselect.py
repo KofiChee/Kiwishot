@@ -78,9 +78,9 @@ class xselect:
 
             # Mouse movement
             elif e.type == X.MotionNotify and started:
-                i = i + 1
-                if i % drawlimit != 0:
-                    continue
+                #i = i + 1
+                #if i % drawlimit != 0:
+                #    continue
 
                 if last:
                     self.draw_rectangle(start, last)
@@ -93,6 +93,7 @@ class xselect:
             # Keyboard key
             elif e.type == X.KeyPress:
                 sys.exit(0)
+            self.d.flush()
 
         self.d.ungrab_pointer(0)
         self.d.flush()
