@@ -1,6 +1,7 @@
 import sys
 from Xlib import X, display, Xutil, xobject, Xcursorfont
 
+
 class xselect:
     def __init__(self):
         # X display
@@ -11,17 +12,24 @@ class xselect:
 
         # Draw on the root window (desktop surface)
         self.window = self.screen.root
-        
+     
     def select_region(self):
 
         # Set cursor to crosshair
         font = self.d.open_font('cursor')
-        cursor = font.create_glyph_cursor(font, Xcursorfont.crosshair, Xcursorfont.crosshair+1, (65535, 65535, 65535), (0, 0, 0))
+        cursor = font.create_glyph_cursor(font, Xcursorfont.crosshair,
+                                          Xcursorfont.crosshair+1,
+                                          (65535, 65535, 65535), (0, 0, 0))
 
-        self.window.grab_pointer(1, X.PointerMotionMask|X.ButtonReleaseMask|X.ButtonPressMask,
-                X.GrabModeAsync, X.GrabModeAsync, X.NONE, cursor, X.CurrentTime)
-
-        self.window.grab_keyboard(1, X.GrabModeAsync, X.GrabModeAsync, X.CurrentTime)
+        self.window.grab_pointer(1,
+                                 X.PointerMotionMask |
+                                 X.ButtonReleaseMask |
+                                 X.ButtonPressMask,
+                                 X.GrabModeAsync,
+                                 X.GrabModeAsync,
+                                 X.NONE,
+                                 cursor,
+                                 X.CurrentTime)
 
         colormap = self.screen.default_colormap
         color = colormap.alloc_color(0, 0, 0)
@@ -29,28 +37,26 @@ class xselect:
         xor_color = color.pixel ^ 0xffffff
 
         self.gc = self.window.create_gc(
-            line_width = 1,
-            line_style = X.LineSolid,
-            fill_style = X.FillOpaqueStippled,
-            fill_rule  = X.WindingRule,
-            cap_style  = X.CapButt,
-            join_style = X.JoinMiter,
-            foreground = xor_color,
-            background = self.screen.black_pixel,
-            function = X.GXxor,
-            graphics_exposures = False,
-            subwindow_mode = X.IncludeInferiors,
+            line_width=1,
+            line_style=X.LineSolid,
+            fill_style=X.FillOpaqueStippled,
+            fill_rule=X.WindingRule,
+            cap_style=X.CapButt,
+            join_style=X.JoinMiter,
+            foreground=xor_color,
+            background=self.screen.black_pixel,
+            function=X.GXxor,
+            graphics_exposures=False,
+            subwindow_mode=X.IncludeInferiors,
         )
 
-        done    = False
+        done = False
         started = False
-        start   = dict(x=0, y=0)
-        end     = dict(x=0, y=0)
-        last    = None
-        drawlimit = 10
-        i = 0
+        start = dict(x=0, y=0)
+        end = dict(x=0, y=0)
+        last = None
 
-        while done == False:
+        while not done:
             e = self.d.next_event()
 
             # Window has been destroyed, quit
@@ -78,10 +84,6 @@ class xselect:
 
             # Mouse movement
             elif e.type == X.MotionNotify and started:
-                #i = i + 1
-                #if i % drawlimit != 0:
-                #    continue
-
                 if last:
                     self.draw_rectangle(start, last)
                     last = None
@@ -93,7 +95,9 @@ class xselect:
             # Keyboard key
             elif e.type == X.KeyPress:
                 sys.exit(0)
-            self.d.flush()
+
+            elif e.type == X.EnterNotify:
+                print('	EnterNotify')
 
         self.d.ungrab_pointer(0)
         self.d.flush()
@@ -106,21 +110,21 @@ class xselect:
 
     def get_coords(self, start, end):
         safe_start = dict(x=0, y=0)
-        safe_end   = dict(x=0, y=0)
+        safe_end = dict(x=0, y=0)
 
         if start['x'] > end['x']:
             safe_start['x'] = end['x']
-            safe_end['x']   = start['x']
+            safe_end['x'] = start['x']
         else:
             safe_start['x'] = start['x']
-            safe_end['x']   = end['x']
+            safe_end['x'] = end['x']
 
         if start['y'] > end['y']:
             safe_start['y'] = end['y']
-            safe_end['y']   = start['y']
+            safe_end['y'] = start['y']
         else:
             safe_start['y'] = start['y']
-            safe_end['y']   = end['y']
+            safe_end['y'] = end['y']
 
         return {
             'start': {
@@ -131,13 +135,14 @@ class xselect:
                 'x': safe_end['x'],
                 'y': safe_end['y'],
             },
-            'width' : safe_end['x'] - safe_start['x'],
+            'width': safe_end['x'] - safe_start['x'],
             'height': safe_end['y'] - safe_start['y'],
         }
 
     def draw_rectangle(self, start, end):
         coords = self.get_coords(start, end)
-        self.window.rectangle(self.gc,
+        self.window.rectangle(
+            self.gc,
             coords['start']['x'],
             coords['start']['y'],
             coords['end']['x'] - coords['start']['x'],
