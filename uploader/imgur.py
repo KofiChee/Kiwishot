@@ -2,6 +2,7 @@ import pyimgur
 
 CLIENT_ID = "dcc1c15bae05fc3"
 
+
 def upload(filepath):
     """
     Takes a filepath of an image and attempts to upload
