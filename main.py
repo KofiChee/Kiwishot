@@ -1,12 +1,44 @@
-import argparse
 import sys
 import os
 import tkinter as tk
 import time
 import PIL.Image
 import PIL.ImageTk
+
+from absl import app
+from absl import flags
 from uploader import imgur
 from screenshot import screenshot
+
+FLAGS = flags.FLAGS
+flags.DEFINE_bool('region',
+                  None,
+                  'Take a screenshot of a selected region',
+                  short_name='r'
+                  )
+flags.DEFINE_bool('active',
+                  None,
+                  'Take a screenshot of the active window',
+                  short_name='a'
+                  )
+flags.DEFINE_bool('full',
+                  None,
+                  'Take a screenshot of the entire screen',
+                  short_name='f'
+                  )
+
+flags.DEFINE_bool('nogui',
+                  None,
+                  'Don\'t use the GUI, automatically uploads to image host',
+                  short_name='ng'
+                  )
+
+flags.DEFINE_string('save_location',
+                    '/tmp/tmp.png',
+                    'File to save screenshot to, default is /tmp/tmp.png',
+                    short_name='s')
+
+flags.mark_flags_as_mutual_exclusive(['region', 'active', 'full'])
 
 
 def upload(filepath):
@@ -17,33 +49,17 @@ def upload(filepath):
 
 def take_screenshot(region=False, active=False,
                     full=False, nogui=False):
-    temp_file = "/tmp/temp.png"
     print("Taking Screenshot")
     if region:
-        screenshot.screenshot_region(temp_file)
+        screenshot.screenshot_region(FLAGS.save_location)
     elif active:
-        screenshot.screenshot_active(temp_file)
+        screenshot.screenshot_active(FLAGS.save_location)
     else:
-        screenshot.screenshot_full(temp_file)
+        screenshot.screenshot_full(FLAGS.save_location)
     if nogui:
-        upload(temp_file)
+        upload(FLAGS.save_location)
         os.system('xclip -selection clipboard -t image/png -i {}'
-                  .format(temp_file))
-        os.system('rm {}'.format(temp_file))
-
-
-def start_gui():
-    temp_file = "/tmp/temp.png"
-    screenshot.screenshot_active(temp_file)
-    root = tk.Tk()
-    root.title("Title")
-    root.geometry("600x600")
-    root.configure(background="black")
-    root.attributes('-type', 'dialog')
-    e = Gui(root, temp_file)
-    e.pack(fill='both', expand='yes')
-    root.mainloop()
-    root.withdraw()
+                  .format(FLAGS.save_location))
 
 
 class Gui(tk.Frame):
@@ -80,7 +96,6 @@ class Gui(tk.Frame):
         self.button_frame.pack(side='bottom')
 
     def _upload(self):
-        print('WHY THOUGH')
         upload(self.imagepath)
 
     def _set_image(self):
@@ -90,23 +105,23 @@ class Gui(tk.Frame):
         # self.background.configure(image=self.background_image)
 
     def _full(self):
-        root.withdraw()
+        self.master.withdraw()
         time.sleep(0.5)
         screenshot.screenshot_full(self.imagepath)
         self._set_image()
-        root.deiconify()
+        self.master.deiconify()
 
     def _active(self):
-        root.withdraw()
+        self.master.withdraw()
         screenshot.screenshot_active(self.imagepath)
         self._set_image()
-        root.deiconify()
+        self.master.deiconify()
 
     def _region(self):
-        root.withdraw()
+        self.master.withdraw()
         screenshot.screenshot_region(self.imagepath)
         self._set_image()
-        root.deiconify()
+        self.master.deiconify()
 
     def _resize_image(self, event=None):
         if event:
@@ -123,37 +138,28 @@ class Gui(tk.Frame):
         self.background.configure(image=self.background_image)
 
     def _hide_window(self):
-        root.withdraw()
+        self.master.withdraw()
         time.sleep(5)
-        root.deiconify()
+        self.master.deiconify()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Scrotum')
-    parser.add_argument('-r', '--region',
-                        help='Description for region argument',
-                        action='store_true')
-    parser.add_argument('-a', '--active',
-                        help='Description for active argument',
-                        action='store_true')
-    parser.add_argument('-f', '--full',
-                        help='Description for whole argument',
-                        action='store_true')
-    parser.add_argument('-n', '--nogui',
-                        help='Don\'t run the GUI',
-                        action='store_true')
-    args = vars(parser.parse_args())
-    if args['nogui']:
-        take_screenshot(args['region'], args['active'],
-                        args['full'], args['no-gui'])
-    else:
-        temp_file = "/tmp/temp.png"
-        screenshot.screenshot_active(temp_file)
+def main(argv):
+    del(argv)
+
+    take_screenshot(FLAGS.region,
+                    FLAGS.active,
+                    FLAGS.full,
+                    FLAGS.nogui)
+
+    if not FLAGS.nogui:
         root = tk.Tk()
         root.title("Title")
         root.geometry("600x600")
         root.configure(background="black")
         root.attributes('-type', 'dialog')
-        e = Gui(root, temp_file)
+        e = Gui(root, FLAGS.save_location)
         e.pack(fill='both', expand='yes')
         root.mainloop()
+
+if __name__ == '__main__':
+    app.run(main)
