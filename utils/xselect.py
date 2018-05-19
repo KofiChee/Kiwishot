@@ -12,9 +12,15 @@ class xselect:
 
         # Draw on the root window (desktop surface)
         self.window = self.screen.root
-     
-    def select_region(self):
+        print(self.window.get_geometry()._data['height'])
 
+    def select_region(self):
+        """
+        Draws on the screen, allowing the user to select a rectangle.
+
+        Returns the X and Y coordinates, along with their offsets to
+        make a rectangle
+        """
         # Set cursor to crosshair
         font = self.d.open_font('cursor')
         cursor = font.create_glyph_cursor(font, Xcursorfont.crosshair,
@@ -109,6 +115,11 @@ class xselect:
             return coords
 
     def get_coords(self, start, end):
+        """Gets the coordinates from the supplied start and end
+
+        Returns a dict of dicts, containing the "safe" coordinates
+        such that none are negative relative to the starting position
+        """
         safe_start = dict(x=0, y=0)
         safe_end = dict(x=0, y=0)
 
@@ -140,6 +151,7 @@ class xselect:
         }
 
     def draw_rectangle(self, start, end):
+        """Draws the rectangle on the screen"""
         coords = self.get_coords(start, end)
         self.window.rectangle(
             self.gc,
