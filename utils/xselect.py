@@ -1,4 +1,5 @@
 import sys
+from PIL import Image
 from Xlib import X, display, Xutil, xobject, Xcursorfont
 
 
@@ -83,8 +84,8 @@ class xselect:
             # Mouse button release
             elif e.type == X.ButtonRelease:
                 end = dict(x=e.root_x, y=e.root_y)
-                if last:
-                    self.draw_rectangle(start, last)
+                #if last:
+                #    self.draw_rectangle(start, last)
                 done = True
                 pass
 
@@ -138,16 +139,10 @@ class xselect:
             safe_end['y'] = end['y']
 
         return {
-            'start': {
                 'x': safe_start['x'],
                 'y': safe_start['y'],
-            },
-            'end': {
-                'x': safe_end['x'],
-                'y': safe_end['y'],
-            },
-            'width': safe_end['x'] - safe_start['x'],
-            'height': safe_end['y'] - safe_start['y'],
+                'width': safe_end['x'] - safe_start['x'],
+                'height': safe_end['y'] - safe_start['y'],
         }
 
     def draw_rectangle(self, start, end):
@@ -155,8 +150,29 @@ class xselect:
         coords = self.get_coords(start, end)
         self.window.rectangle(
             self.gc,
-            coords['start']['x'],
-            coords['start']['y'],
-            coords['end']['x'] - coords['start']['x'],
-            coords['end']['y'] - coords['start']['y']
+            coords['x'],
+            coords['y'],
+            coords['width'],
+            coords['height']
         )
+
+    def active_window(self):
+        """Returns information about the active window.
+
+        Returns a dict containing the x and y coordinates
+        of the active window along with width and height."""
+        focused = self.d.get_input_focus().focus
+        data = focused.query_tree().parent.get_geometry()._data
+        return {
+                'x': data['x'],
+                'y': data['y'],
+                'width': data['width'],
+                'height': data['height']
+               }
+
+    def grab_image(self, x, y, width, height):
+        """Returns a PIL.Image of the supplied coordinates."""
+        image = self.window.get_image(x, y, width, height,
+                                      X.ZPixmap, 0xFFFFFFFF)
+        return Image.frombytes("RGB", (width, height),
+                               image.data, "raw", "BGRX")
