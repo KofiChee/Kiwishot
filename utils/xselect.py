@@ -13,7 +13,6 @@ class xselect:
 
         # Draw on the root window (desktop surface)
         self.window = self.screen.root
-        print(self.window.get_geometry()._data['height'])
 
     def select_region(self):
         """
@@ -43,7 +42,20 @@ class xselect:
         # Xor it because we'll draw with X.GXxor function
         xor_color = color.pixel ^ 0xffffff
 
-        self.gc = self.window.create_gc(
+        data = self.window.get_geometry()._data
+        new_window = self.window.create_window(
+            0,
+            0,
+            data['width'],
+            data['height'],
+            0,
+            24,
+            override_redirect=1)
+
+        new_window.map()
+        new_window.change_attributes({'override_redirect':1})
+        print(new_window.get_attributes())
+        self.gc = new_window.create_gc(
             line_width=1,
             line_style=X.LineSolid,
             fill_style=X.FillOpaqueStippled,
