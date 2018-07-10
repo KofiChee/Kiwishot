@@ -53,7 +53,7 @@ class xselect:
             override_redirect=1)
 
         new_window.map()
-        new_window.change_attributes({'override_redirect':1})
+        new_window.change_attributes({'override_redirect': 1})
         print(new_window.get_attributes())
         self.gc = new_window.create_gc(
             line_width=1,
@@ -96,8 +96,8 @@ class xselect:
             # Mouse button release
             elif e.type == X.ButtonRelease:
                 end = dict(x=e.root_x, y=e.root_y)
-                #if last:
-                #    self.draw_rectangle(start, last)
+                if last:
+                    self.draw_rectangle(start, last)
                 done = True
                 pass
 

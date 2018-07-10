@@ -51,7 +51,7 @@ def upload(filepath):
 def take_screenshot(region=False, active=False,
                     full=False, nogui=False):
     """Takes screenshot based on given flags.
-    
+
     Also pushes image to clipboard using xclip.
     if nogui is set, it also uploads the image.
     """
@@ -64,9 +64,10 @@ def take_screenshot(region=False, active=False,
         screenshot.screenshot_full(FLAGS.save_location)
     if nogui:
         upload(FLAGS.save_location)
-    
+
     os.system('xclip -selection clipboard -t image/png -i {}'
               .format(FLAGS.save_location))
+
 
 class Gui(tk.Frame):
     def __init__(self, master, imagepath, *pargs):
