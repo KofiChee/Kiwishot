@@ -54,7 +54,6 @@ class xselect:
 
         new_window.map()
         new_window.change_attributes({'override_redirect': 1})
-        print(new_window.get_attributes())
         self.gc = new_window.create_gc(
             line_width=1,
             line_style=X.LineSolid,
@@ -120,6 +119,7 @@ class xselect:
 
         self.d.ungrab_pointer(0)
         self.d.flush()
+        new_window.destroy()
 
         coords = self.get_coords(start, end)
         if coords['width'] <= 1 or coords['height'] <= 1:
