@@ -27,10 +27,10 @@ flags.DEFINE_bool('full',
                   short_name='f'
                   )
 
-flags.DEFINE_bool('nogui',
+flags.DEFINE_bool('gui',
                   None,
-                  'Don\'t use the GUI, automatically uploads to image host',
-                  short_name='ng'
+                  'Use the GUI, and don\'t automatically upload to image host',
+                  short_name='g'
                   )
 
 flags.DEFINE_string('save_location',
@@ -49,11 +49,11 @@ def upload(filepath):
 
 
 def take_screenshot(region=False, active=False,
-                    full=False, nogui=False):
+                    full=False, gui=False):
     """Takes screenshot based on given flags.
 
     Also pushes image to clipboard using xclip.
-    if nogui is set, it also uploads the image.
+    if gui is not set, it also uploads the image.
     """
     print("Taking Screenshot")
     if region:
@@ -62,7 +62,7 @@ def take_screenshot(region=False, active=False,
         screenshot.screenshot_active(FLAGS.save_location)
     else:
         screenshot.screenshot_full(FLAGS.save_location)
-    if nogui:
+    if not gui:
         upload(FLAGS.save_location)
 
     os.system('xclip -selection clipboard -t image/png -i {}'
@@ -170,11 +170,11 @@ def main(argv):
     take_screenshot(FLAGS.region,
                     FLAGS.active,
                     FLAGS.full,
-                    FLAGS.nogui)
+                    FLAGS.gui)
 
-    if not FLAGS.nogui:
+    if FLAGS.gui:
         root = tk.Tk()
-        root.title("Scrotum")
+        root.title("Kiwishot")
         root.geometry("1024x768")
         # Set -type to dialog, so tiling WM treat it as floating
         root.attributes('-type', 'dialog')

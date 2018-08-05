@@ -1,5 +1,6 @@
-Scrot Upload Manager is a tool for taking screenshot and uploading them to web-based image hosting services.
+Kiwishot is a tool for taking screenshot and uploading them to web-based image hosting services.
 
 Dependencies:
-
-pip install pyimgur
+pyimgur
+pythonxlib
+PIL
