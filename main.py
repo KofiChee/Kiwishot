@@ -34,7 +34,7 @@ flags.DEFINE_bool('gui',
                   )
 
 flags.DEFINE_bool('upload',
-                  False,
+                  True,
                   'Upload to image host',
                   short_name='u'
                   )
