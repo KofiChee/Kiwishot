@@ -29,8 +29,14 @@ flags.DEFINE_bool('full',
 
 flags.DEFINE_bool('gui',
                   None,
-                  'Use the GUI, and don\'t automatically upload to image host',
+                  'Use the GUI to preview, and don\'t automatically upload to image host',
                   short_name='g'
+                  )
+
+flags.DEFINE_bool('upload',
+                  False,
+                  'Upload to image host',
+                  short_name='u'
                   )
 
 flags.DEFINE_string('save_location',
@@ -49,7 +55,7 @@ def upload(filepath):
 
 
 def take_screenshot(region=False, active=False,
-                    full=False, gui=False):
+                    full=False, gui=False, upload=True):
     """Takes screenshot based on given flags.
 
     Also pushes image to clipboard using xclip.
@@ -62,7 +68,7 @@ def take_screenshot(region=False, active=False,
         screenshot.screenshot_active(FLAGS.save_location)
     else:
         screenshot.screenshot_full(FLAGS.save_location)
-    if not gui:
+    if not gui and upload:
         upload(FLAGS.save_location)
 
     os.system('xclip -selection clipboard -t image/png -i {}'
