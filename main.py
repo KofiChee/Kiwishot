@@ -47,7 +47,7 @@ flags.DEFINE_string('save_location',
 flags.mark_flags_as_mutual_exclusive(['region', 'active', 'full'])
 
 
-def upload(filepath):
+def upload_image(filepath):
     """Uploads image to host and prints link to console"""
     print('Uploading screenshot')
     link = imgur.upload(filepath)
@@ -69,7 +69,7 @@ def take_screenshot(region=False, active=False,
     else:
         screenshot.screenshot_full(FLAGS.save_location)
     if not gui and upload:
-        upload(FLAGS.save_location)
+        upload_image(FLAGS.save_location)
 
     os.system('xclip -selection clipboard -t image/png -i {}'
               .format(FLAGS.save_location))
@@ -176,7 +176,8 @@ def main(argv):
     take_screenshot(FLAGS.region,
                     FLAGS.active,
                     FLAGS.full,
-                    FLAGS.gui)
+                    FLAGS.gui,
+                    FLAGS.upload)
 
     if FLAGS.gui:
         root = tk.Tk()
