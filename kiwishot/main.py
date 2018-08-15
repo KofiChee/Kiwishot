@@ -34,7 +34,7 @@ flags.DEFINE_bool('gui',
                   )
 
 flags.DEFINE_bool('upload',
-                  True,
+                  False,
                   'Upload to image host',
                   short_name='u'
                   )
@@ -191,4 +191,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    app.run(main)
+        app.run(main)
