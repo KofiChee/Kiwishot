@@ -14,6 +14,16 @@ class xselect:
         # Draw on the root window (desktop surface)
         self.window = self.screen.root
 
+        # Create screenshot window
+        data = self.window.get_geometry()._data
+        self.ss_window = self.window.create_window(
+            0,
+            0,
+            data['width'],
+            data['height'],
+            0,
+            24)
+
     def select_region(self):
         """
         Draws on the screen, allowing the user to select a rectangle.
@@ -21,6 +31,9 @@ class xselect:
         Returns the X and Y coordinates, along with their offsets to
         make a rectangle
         """
+        self.ss_window.change_attributes(override_redirect=1)
+        self.ss_window.map()
+
         # Set cursor to crosshair
         font = self.d.open_font('cursor')
         cursor = font.create_glyph_cursor(font, Xcursorfont.crosshair,
@@ -42,19 +55,9 @@ class xselect:
         # Xor it because we'll draw with X.GXxor function
         xor_color = color.pixel ^ 0xffffff
 
-        data = self.window.get_geometry()._data
-        new_window = self.window.create_window(
-            0,
-            0,
-            data['width'],
-            data['height'],
-            0,
-            24,
-            override_redirect=1)
-
-        new_window.map()
-        new_window.change_attributes({'override_redirect': 1})
-        self.gc = new_window.create_gc(
+        self.ss_window.change_attributes(override_redirect=1)
+        self.ss_window.map()
+        self.gc = self.ss_window.create_gc(
             line_width=1,
             line_style=X.LineSolid,
             fill_style=X.FillOpaqueStippled,
@@ -119,7 +122,7 @@ class xselect:
 
         self.d.ungrab_pointer(0)
         self.d.flush()
-        new_window.destroy()
+        self.ss_window.destroy()
 
         coords = self.get_coords(start, end)
         if coords['width'] <= 1 or coords['height'] <= 1:
@@ -160,7 +163,7 @@ class xselect:
     def draw_rectangle(self, start, end):
         """Draws the rectangle on the screen"""
         coords = self.get_coords(start, end)
-        self.window.rectangle(
+        self.ss_window.rectangle(
             self.gc,
             coords['x'],
             coords['y'],
