@@ -1,6 +1,6 @@
 import sys
 import os
-from utils import xselect
+from kiwishot.utils import xselect
 
 
 def screenshot_full(filename):

@@ -7,8 +7,8 @@ import PIL.ImageTk
 
 from absl import app
 from absl import flags
-from uploader import imgur
-from screenshot import screenshot
+from kiwishot.uploader import imgur
+from kiwishot.screenshot import screenshot
 
 FLAGS = flags.FLAGS
 flags.DEFINE_bool('region',
@@ -171,7 +171,7 @@ class Gui(tk.Frame):
 
 
 def main(argv):
-    del(argv)
+    del argv
 
     take_screenshot(FLAGS.region,
                     FLAGS.active,
@@ -189,6 +189,8 @@ def main(argv):
         e.pack(fill='both', expand='yes')
         root.mainloop()
 
+def run_main():
+    app.run(main)
 
 if __name__ == '__main__':
         app.run(main)
