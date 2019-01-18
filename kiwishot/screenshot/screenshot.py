@@ -6,8 +6,9 @@ from kiwishot.utils import xselect
 def screenshot_full(filename):
     """Takes screenshot of entire root window (desktop)"""
     X = xselect.xselect()
-    # TODO: Grab the root window dimensions
-    image = X.grab_image(0, 0, 1920, 1080)
+    dimensions = X.fullscreen()
+    image = X.grab_image(0, 0, dimensions['width'],
+                         dimensions['height'])
     image.save(filename)
 
 

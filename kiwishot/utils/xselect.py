@@ -185,6 +185,16 @@ class xselect:
                 'height': data['height']
                }
 
+    def fullscreen(self):
+        """Returns dimensions of the full screen.
+        """
+        data = self.window.get_geometry()
+        return {
+                'width': data.width,
+                'height': data.height
+               }
+
+
     def grab_image(self, x, y, width, height):
         """Returns a PIL.Image of the supplied coordinates."""
         image = self.window.get_image(x, y, width, height,
